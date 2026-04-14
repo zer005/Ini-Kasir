@@ -1,21 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="16dp">
+    android:padding="20dp">
     
-    <EditText
-        android:id="@+id/etProductName"
+    <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Nama Produk" />
+        android:layout_marginBottom="16dp"
+        app:boxBackgroundMode="outline"
+        app:hintTextColor="@color/primary"
+        app:boxStrokeColor="@color/primary"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
         
-    <EditText
-        android:id="@+id/etProductPrice"
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etProductName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Nama Produk"
+            android:inputType="text"
+            android:maxLines="2" />
+            
+    </com.google.android.material.textfield.TextInputLayout>
+    
+    <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Harga"
-        android:inputType="numberDecimal" />
+        android:layout_marginBottom="8dp"
+        app:boxBackgroundMode="outline"
+        app:hintTextColor="@color/primary"
+        app:boxStrokeColor="@color/primary"
+        app:prefixText="Rp "
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
         
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etProductPrice"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Harga"
+            android:inputType="numberDecimal" />
+            
+    </com.google.android.material.textfield.TextInputLayout>
+    
 </LinearLayout>

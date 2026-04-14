@@ -4,9 +4,11 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.inikasir.R
 import com.inikasir.databinding.FragmentTransactionHistoryBinding
 import java.text.SimpleDateFormat
 import java.util.*
@@ -51,7 +53,22 @@ class TransactionHistoryFragment : Fragment() {
     private fun observeData() {
         viewModel.transactions.observe(viewLifecycleOwner) { transactions ->
             transactionAdapter.submitList(transactions)
-            binding.tvEmptyTransactions.visibility = if (transactions.isEmpty()) View.VISIBLE else View.GONE
+            
+            // Update empty state
+            if (transactions.isEmpty()) {
+                binding.emptyState.visibility = View.VISIBLE
+                binding.rvTransactions.visibility = View.GONE
+            } else {
+                binding.emptyState.visibility = View.GONE
+                binding.rvTransactions.visibility = View.VISIBLE
+            }
+            
+            // Update summary
+            val totalTransactions = transactions.size
+            val totalRevenue = transactions.sumOf { it.total }
+            
+            binding.tvTotalTransactions.text = "$totalTransactions"
+            binding.tvTotalRevenue.text = "Rp ${String.format("%,.0f", totalRevenue)}"
         }
     }
     

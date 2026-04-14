@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/background"
     android:padding="16dp">
     
     <LinearLayout
@@ -10,126 +12,223 @@
         android:orientation="vertical">
         
         <!-- Export Section -->
-        <TextView
+        <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="📤 Export Data"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:layout_marginBottom="16dp" />
-        
-        <Button
-            android:id="@+id/btnExport"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Export ke CSV"
-            android:layout_marginBottom="32dp" />
+            android:layout_marginBottom="24dp"
+            app:cardElevation="4dp"
+            app:cardCornerRadius="16dp">
+            
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="20dp">
+                
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="16dp">
+                    
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="📤 Export Data"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/text_primary" />
+                        
+                </LinearLayout>
+                
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Simpan semua data ke file CSV"
+                    android:textSize="14sp"
+                    android:textColor="@color/text_secondary"
+                    android:layout_marginBottom="16dp" />
+                
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnExport"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:text="📤 Export ke CSV"
+                    android:textAllCaps="false"
+                    app:cornerRadius="12dp"
+                    app:backgroundTint="@color/primary" />
+                    
+            </LinearLayout>
+            
+        </com.google.android.material.card.MaterialCardView>
         
         <!-- Import Section -->
-        <TextView
+        <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="📥 Import Data"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:layout_marginBottom="16dp" />
-        
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="File Produk (products_*.csv)"
-            android:textSize="14sp"
-            android:layout_marginBottom="8dp" />
-        
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginBottom="16dp">
+            android:layout_marginBottom="24dp"
+            app:cardElevation="4dp"
+            app:cardCornerRadius="16dp">
             
-            <TextView
-                android:id="@+id/tvProductsFile"
-                android:layout_width="0dp"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Belum dipilih"
-                android:padding="12dp"
-                android:background="@color/gray_light" />
-            
-            <Button
-                android:id="@+id/btnSelectProducts"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Pilih" />
+                android:orientation="vertical"
+                android:padding="20dp">
                 
-        </LinearLayout>
-        
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="File Transaksi (transactions_*.csv)"
-            android:textSize="14sp"
-            android:layout_marginBottom="8dp" />
-        
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginBottom="16dp">
-            
-            <TextView
-                android:id="@+id/tvTransactionsFile"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Belum dipilih"
-                android:padding="12dp"
-                android:background="@color/gray_light" />
-            
-            <Button
-                android:id="@+id/btnSelectTransactions"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Pilih" />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="📥 Import Data"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/text_primary"
+                    android:layout_marginBottom="8dp" />
+                    
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Pilih file CSV untuk mengembalikan data"
+                    android:textSize="14sp"
+                    android:textColor="@color/text_secondary"
+                    android:layout_marginBottom="20dp" />
                 
-        </LinearLayout>
-        
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="File Detail Transaksi (transaction_details_*.csv)"
-            android:textSize="14sp"
-            android:layout_marginBottom="8dp" />
-        
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginBottom="24dp">
-            
-            <TextView
-                android:id="@+id/tvDetailsFile"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Belum dipilih"
-                android:padding="12dp"
-                android:background="@color/gray_light" />
-            
-            <Button
-                android:id="@+id/btnSelectDetails"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Pilih" />
+                <!-- Products File -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="📦 File Produk"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/text_primary"
+                    android:layout_marginBottom="8dp" />
                 
-        </LinearLayout>
-        
-        <Button
-            android:id="@+id/btnImport"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Import Data"
-            android:backgroundTint="@color/teal_700" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="16dp">
+                    
+                    <TextView
+                        android:id="@+id/tvProductsFile"
+                        android:layout_width="0dp"
+                        android:layout_height="48dp"
+                        android:layout_weight="1"
+                        android:text="Belum dipilih"
+                        android:gravity="center_vertical"
+                        android:paddingHorizontal="12dp"
+                        android:background="@drawable/bg_file_input"
+                        android:textColor="@color/text_secondary"
+                        android:maxLines="1"
+                        android:ellipsize="middle" />
+                    
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnSelectProducts"
+                        android:layout_width="wrap_content"
+                        android:layout_height="48dp"
+                        android:layout_marginStart="8dp"
+                        android:text="Pilih"
+                        android:textAllCaps="false"
+                        app:cornerRadius="8dp"
+                        style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
+                        
+                </LinearLayout>
+                
+                <!-- Transactions File -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="💰 File Transaksi"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/text_primary"
+                    android:layout_marginBottom="8dp" />
+                
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="16dp">
+                    
+                    <TextView
+                        android:id="@+id/tvTransactionsFile"
+                        android:layout_width="0dp"
+                        android:layout_height="48dp"
+                        android:layout_weight="1"
+                        android:text="Belum dipilih"
+                        android:gravity="center_vertical"
+                        android:paddingHorizontal="12dp"
+                        android:background="@drawable/bg_file_input"
+                        android:textColor="@color/text_secondary"
+                        android:maxLines="1"
+                        android:ellipsize="middle" />
+                    
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnSelectTransactions"
+                        android:layout_width="wrap_content"
+                        android:layout_height="48dp"
+                        android:layout_marginStart="8dp"
+                        android:text="Pilih"
+                        android:textAllCaps="false"
+                        app:cornerRadius="8dp"
+                        style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
+                        
+                </LinearLayout>
+                
+                <!-- Details File -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="📝 File Detail"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/text_primary"
+                    android:layout_marginBottom="8dp" />
+                
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="24dp">
+                    
+                    <TextView
+                        android:id="@+id/tvDetailsFile"
+                        android:layout_width="0dp"
+                        android:layout_height="48dp"
+                        android:layout_weight="1"
+                        android:text="Belum dipilih"
+                        android:gravity="center_vertical"
+                        android:paddingHorizontal="12dp"
+                        android:background="@drawable/bg_file_input"
+                        android:textColor="@color/text_secondary"
+                        android:maxLines="1"
+                        android:ellipsize="middle" />
+                    
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnSelectDetails"
+                        android:layout_width="wrap_content"
+                        android:layout_height="48dp"
+                        android:layout_marginStart="8dp"
+                        android:text="Pilih"
+                        android:textAllCaps="false"
+                        app:cornerRadius="8dp"
+                        style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
+                        
+                </LinearLayout>
+                
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnImport"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:text="📥 Import Data"
+                    android:textAllCaps="false"
+                    app:cornerRadius="12dp"
+                    app:backgroundTint="@color/success" />
+                    
+            </LinearLayout>
+            
+        </com.google.android.material.card.MaterialCardView>
         
         <!-- Progress Bar -->
         <ProgressBar

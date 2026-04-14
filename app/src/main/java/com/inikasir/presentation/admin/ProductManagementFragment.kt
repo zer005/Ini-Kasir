@@ -69,7 +69,17 @@ class ProductManagementFragment : Fragment() {
     private fun observeData() {
         viewModel.products.observe(viewLifecycleOwner) { products ->
             productAdapter.submitList(products)
-            binding.tvEmptyProducts.visibility = if (products.isEmpty()) View.VISIBLE else View.GONE
+            
+            val emptyState = binding.root.findViewById<View>(R.id.emptyState)
+            val rvProducts = binding.rvProducts
+            
+            if (products.isEmpty()) {
+                emptyState.visibility = View.VISIBLE
+                rvProducts.visibility = View.GONE
+            } else {
+                emptyState.visibility = View.GONE
+                rvProducts.visibility = View.VISIBLE
+            }
         }
     }
     
