@@ -4,7 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="horizontal"
-    android:weightSum="2">
+    android:weightSum="2"
+    android:background="@color/background">
     
     <!-- Left: Product Grid -->
     <LinearLayout
@@ -12,14 +13,32 @@
         android:layout_height="match_parent"
         android:layout_weight="1"
         android:orientation="vertical"
-        android:padding="8dp">
+        android:padding="12dp">
         
-        <androidx.appcompat.widget.SearchView
-            android:id="@+id/etSearch"
+        <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            app:queryHint="Cari produk..." />
+            android:layout_marginBottom="12dp"
+            app:cardElevation="4dp"
+            app:cardCornerRadius="12dp">
+            
+            <androidx.appcompat.widget.SearchView
+                android:id="@+id/etSearch"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:queryHint="🔍 Cari produk..."
+                android:padding="8dp" />
+                
+        </com.google.android.material.card.MaterialCardView>
+        
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="📋 Daftar Menu"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="@color/text_primary"
+            android:layout_marginBottom="8dp" />
         
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvProducts"
@@ -30,71 +49,128 @@
     </LinearLayout>
     
     <!-- Right: Cart -->
-    <LinearLayout
+    <com.google.android.material.card.MaterialCardView
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1"
-        android:orientation="vertical"
-        android:padding="8dp"
-        android:background="@color/gray_light">
+        android:layout_margin="12dp"
+        app:cardElevation="8dp"
+        app:cardCornerRadius="16dp">
         
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="🛒 Keranjang"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:paddingBottom="8dp" />
-        
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rvCart"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1" />
-            
-        <TextView
-            android:id="@+id/tvEmptyCart"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Keranjang kosong"
-            android:gravity="center"
-            android:padding="16dp"
-            android:visibility="gone" />
-            
-        <TextView
-            android:id="@+id/tvTotal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Total: Rp 0"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:padding="8dp"
-            android:gravity="end" />
-            
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:padding="16dp">
             
-            <Button
-                android:id="@+id/btnClearCart"
-                android:layout_width="0dp"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_marginEnd="4dp"
-                android:text="Clear"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
+                android:orientation="horizontal"
+                android:layout_marginBottom="16dp">
                 
-            <Button
-                android:id="@+id/btnCheckout"
-                android:layout_width="0dp"
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="🛒 Keranjang"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/text_primary" />
+                    
+                <TextView
+                    android:id="@+id/tvCartCount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="0 item"
+                    android:textSize="14sp"
+                    android:textColor="@color/text_secondary" />
+                    
+            </LinearLayout>
+            
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/gray_light"
+                android:layout_marginBottom="16dp" />
+            
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvCart"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
+                
+            <TextView
+                android:id="@+id/tvEmptyCart"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:text="🛍️ Keranjang kosong\n\nTap produk untuk menambahkan"
+                android:gravity="center"
+                android:textSize="14sp"
+                android:textColor="@color/text_secondary"
+                android:visibility="gone" />
+            
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/gray_light"
+                android:layout_marginVertical="16dp" />
+            
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_marginStart="4dp"
-                android:text="Bayar" />
+                android:orientation="horizontal"
+                android:layout_marginBottom="16dp">
                 
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Total"
+                    android:textSize="16sp"
+                    android:textColor="@color/text_secondary" />
+                    
+                <TextView
+                    android:id="@+id/tvTotal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Rp 0"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/primary" />
+                    
+            </LinearLayout>
+            
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnClearCart"
+                    android:layout_width="0dp"
+                    android:layout_height="56dp"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="8dp"
+                    android:text="Clear"
+                    android:textAllCaps="false"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
+                    
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnCheckout"
+                    android:layout_width="0dp"
+                    android:layout_height="56dp"
+                    android:layout_weight="1"
+                    android:layout_marginStart="8dp"
+                    android:text="💰 Bayar"
+                    android:textAllCaps="false"
+                    app:backgroundTint="@color/success" />
+                    
+            </LinearLayout>
+            
         </LinearLayout>
         
-    </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
     
 </LinearLayout>

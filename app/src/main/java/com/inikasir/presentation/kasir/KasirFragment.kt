@@ -90,6 +90,11 @@ class KasirFragment : Fragment() {
         viewModel.cartItems.observe(viewLifecycleOwner) { cartItems ->
             cartAdapter.submitList(cartItems)
             binding.tvEmptyCart.visibility = if (cartItems.isEmpty()) View.VISIBLE else View.GONE
+            binding.rvCart.visibility = if (cartItems.isEmpty()) View.GONE else View.VISIBLE
+            
+            // Update cart count
+            val itemCount = cartItems.sumOf { it.quantity }
+            binding.tvCartCount.text = if (itemCount > 0) "$itemCount item" else "0 item"
         }
         
         viewModel.totalAmount.observe(viewLifecycleOwner) { total ->

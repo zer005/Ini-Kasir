@@ -1,10 +1,75 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    
+    <!-- Base application theme -->
     <style name="Theme.IniKasir" parent="Theme.MaterialComponents.DayNight.NoActionBar">
-        <item name="colorPrimary">#FF6200EE</item>
-        <item name="colorPrimaryVariant">#FF3700B3</item>
-        <item name="colorOnPrimary">#FFFFFFFF</item>
-        <item name="colorSecondary">#FF03DAC5</item>
-        <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
+        <!-- Primary colors -->
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorPrimaryVariant">@color/primary_dark</item>
+        <item name="colorOnPrimary">@color/white</item>
+        
+        <!-- Secondary/Accent colors -->
+        <item name="colorSecondary">@color/accent</item>
+        <item name="colorSecondaryVariant">@color/accent_dark</item>
+        <item name="colorOnSecondary">@color/white</item>
+        
+        <!-- Background -->
+        <item name="android:windowBackground">@color/background</item>
+        <item name="colorSurface">@color/surface</item>
+        <item name="colorOnSurface">@color/text_primary</item>
+        
+        <!-- Status bar -->
+        <item name="android:statusBarColor">@color/primary_dark</item>
+        <item name="android:windowLightStatusBar">false</item>
+        
+        <!-- Text colors -->
+        <item name="android:textColorPrimary">@color/text_primary</item>
+        <item name="android:textColorSecondary">@color/text_secondary</item>
+        <item name="android:textColorHint">@color/text_hint</item>
+        
+        <!-- Shape theming -->
+        <item name="shapeAppearanceSmallComponent">@style/ShapeAppearance.Small</item>
+        <item name="shapeAppearanceMediumComponent">@style/ShapeAppearance.Medium</item>
+        <item name="shapeAppearanceLargeComponent">@style/ShapeAppearance.Large</item>
     </style>
+    
+    <!-- Shape appearances -->
+    <style name="ShapeAppearance.Small" parent="ShapeAppearance.MaterialComponents.SmallComponent">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">8dp</item>
+    </style>
+    
+    <style name="ShapeAppearance.Medium" parent="ShapeAppearance.MaterialComponents.MediumComponent">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">12dp</item>
+    </style>
+    
+    <style name="ShapeAppearance.Large" parent="ShapeAppearance.MaterialComponents.LargeComponent">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">16dp</item>
+    </style>
+    
+    <!-- CardView style -->
+    <style name="CardView" parent="Widget.MaterialComponents.CardView">
+        <item name="cardBackgroundColor">@color/card_background</item>
+        <item name="cardCornerRadius">12dp</item>
+        <item name="cardElevation">4dp</item>
+        <item name="cardUseCompatPadding">true</item>
+    </style>
+    
+    <!-- Button styles -->
+    <style name="Button.Primary" parent="Widget.MaterialComponents.Button">
+        <item name="backgroundTint">@color/primary</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="cornerRadius">8dp</item>
+        <item name="android:padding">12dp</item>
+    </style>
+    
+    <style name="Button.Secondary" parent="Widget.MaterialComponents.Button.OutlinedButton">
+        <item name="strokeColor">@color/primary</item>
+        <item name="android:textColor">@color/primary</item>
+        <item name="cornerRadius">8dp</item>
+        <item name="android:padding">12dp</item>
+    </style>
+    
 </resources>

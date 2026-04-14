@@ -2,12 +2,14 @@
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/background">
     
     <FrameLayout
         android:id="@+id/fragment_container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:layout_marginBottom="?attr/actionBarSize" />
     
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fabAddProduct"
@@ -15,15 +17,23 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="16dp"
+        android:layout_marginBottom="72dp"
         android:src="@android:drawable/ic_input_add"
         android:visibility="gone"
-        app:backgroundTint="@color/purple_500" />
+        app:backgroundTint="@color/primary"
+        app:tint="@color/white"
+        app:fabSize="normal" />
         
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavigation"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
-        app:menu="@menu/bottom_nav_menu" />
+        app:menu="@menu/bottom_nav_menu"
+        app:itemIconTint="@color/primary"
+        app:itemTextColor="@color/text_primary"
+        app:labelVisibilityMode="labeled"
+        android:background="@color/surface"
+        app:elevation="8dp" />
     
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
