@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp">
+    
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        
+        <!-- Export Section -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="📤 Export Data"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="16dp" />
+        
+        <Button
+            android:id="@+id/btnExport"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Export ke CSV"
+            android:layout_marginBottom="32dp" />
+        
+        <!-- Import Section -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="📥 Import Data"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="16dp" />
+        
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="File Produk (products_*.csv)"
+            android:textSize="14sp"
+            android:layout_marginBottom="8dp" />
+        
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="16dp">
+            
+            <TextView
+                android:id="@+id/tvProductsFile"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Belum dipilih"
+                android:padding="12dp"
+                android:background="@color/gray_light" />
+            
+            <Button
+                android:id="@+id/btnSelectProducts"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Pilih" />
+                
+        </LinearLayout>
+        
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="File Transaksi (transactions_*.csv)"
+            android:textSize="14sp"
+            android:layout_marginBottom="8dp" />
+        
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="16dp">
+            
+            <TextView
+                android:id="@+id/tvTransactionsFile"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Belum dipilih"
+                android:padding="12dp"
+                android:background="@color/gray_light" />
+            
+            <Button
+                android:id="@+id/btnSelectTransactions"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Pilih" />
+                
+        </LinearLayout>
+        
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="File Detail Transaksi (transaction_details_*.csv)"
+            android:textSize="14sp"
+            android:layout_marginBottom="8dp" />
+        
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="24dp">
+            
+            <TextView
+                android:id="@+id/tvDetailsFile"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Belum dipilih"
+                android:padding="12dp"
+                android:background="@color/gray_light" />
+            
+            <Button
+                android:id="@+id/btnSelectDetails"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Pilih" />
+                
+        </LinearLayout>
+        
+        <Button
+            android:id="@+id/btnImport"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Import Data"
+            android:backgroundTint="@color/teal_700" />
+        
+        <!-- Progress Bar -->
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="16dp"
+            android:visibility="gone" />
+        
+    </LinearLayout>
+    
+</ScrollView>

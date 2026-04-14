@@ -14,4 +14,7 @@ interface TransactionDetailDao {
     
     @Query("SELECT * FROM transaction_details WHERE transactionId = :transactionId")
     suspend fun getDetailsByTransactionId(transactionId: Long): List<TransactionDetailEntity>
+    
+    @Query("SELECT * FROM transaction_details")
+    suspend fun getAllDetailsSync(): List<TransactionDetailEntity>
 }
