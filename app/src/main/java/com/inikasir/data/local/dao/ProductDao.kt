@@ -21,4 +21,8 @@ interface ProductDao {
     
     @Query("SELECT * FROM products ORDER BY name ASC")
     fun getAllProducts(): Flow<List<ProductEntity>>
+    
+    // Tambahan untuk cek jumlah produk
+    @Query("SELECT COUNT(*) FROM products")
+    suspend fun getProductCount(): Int
 }
