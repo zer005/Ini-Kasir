@@ -9,11 +9,9 @@ import kotlinx.coroutines.flow.Flow
 class TransactionRepository(private val database: AppDatabase) {
     
     suspend fun createTransaction(cartItems: List<CartItem>, total: Double): Long {
-        // Insert transaction
         val transaction = TransactionEntity(total = total)
         val transactionId = database.transactionDao().insert(transaction)
         
-        // Insert transaction details
         val details = cartItems.map { item ->
             TransactionDetailEntity(
                 transactionId = transactionId,
