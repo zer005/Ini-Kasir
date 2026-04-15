@@ -14,38 +14,40 @@ class KasirViewModel(
     private val getAllProductsUseCase: GetAllProductsUseCase,
     private val createTransactionUseCase: CreateTransactionUseCase
 ) : BaseViewModel() {
-    
+
     // Products
     val products = getAllProductsUseCase()
-        .map { entities ->
-            entities.map { entity ->
-                ProductEntity(
-                    id = entity.id,
-                    name = entity.name,
-                    price = entity.price
-                )
-            }
-        }
         .asLiveData()
-    
+
     // Cart
     private val _cartItems = MutableLiveData<List<CartItem>>(emptyList())
     val cartItems: LiveData<List<CartItem>> = _cartItems
-    
+
     private val _totalAmount = MutableLiveData(0.0)
     val totalAmount: LiveData<Double> = _totalAmount
-    
+
     private val _transactionResult = MutableLiveData<TransactionResult>()
     val transactionResult: LiveData<TransactionResult> = _transactionResult
-    
+
     // Search
     private val _searchQuery = MutableLiveData("")
     val searchQuery: LiveData<String> = _searchQuery
-    
+
     fun addToCart(product: ProductEntity) {
+        // Check if product has variants
+        if (product.parentId == null && product.variantName == null) {
+            // Main product without variants - add directly
+            addItemToCart(product)
+        } else {
+            // Product with variants - add the specific variant
+            addItemToCart(product)
+        }
+    }
+
+    private fun addItemToCart(product: ProductEntity) {
         val currentCart = _cartItems.value?.toMutableList() ?: mutableListOf()
         val existingItem = currentCart.find { it.productId == product.id }
-        
+
         if (existingItem != null) {
             val index = currentCart.indexOf(existingItem)
             val updatedItem = existingItem.copy(
@@ -57,27 +59,31 @@ class KasirViewModel(
             currentCart.add(
                 CartItem(
                     productId = product.id,
-                    productName = product.name,
+                    productName = if (product.variantName != null) {
+                        "${product.name} (${product.variantName})"
+                    } else {
+                        product.name
+                    },
                     price = product.price,
                     quantity = 1,
                     subtotal = product.price
                 )
             )
         }
-        
+
         _cartItems.value = currentCart
         calculateTotal()
     }
-    
+
     fun updateQuantity(productId: Long, newQuantity: Int) {
         if (newQuantity <= 0) {
             removeFromCart(productId)
             return
         }
-        
+
         val currentCart = _cartItems.value?.toMutableList() ?: return
         val index = currentCart.indexOfFirst { it.productId == productId }
-        
+
         if (index != -1) {
             val item = currentCart[index]
             currentCart[index] = item.copy(
@@ -88,48 +94,48 @@ class KasirViewModel(
             calculateTotal()
         }
     }
-    
+
     fun removeFromCart(productId: Long) {
         val currentCart = _cartItems.value?.toMutableList() ?: return
         currentCart.removeAll { it.productId == productId }
         _cartItems.value = currentCart
         calculateTotal()
     }
-    
+
     fun clearCart() {
         _cartItems.value = emptyList()
         _totalAmount.value = 0.0
     }
-    
+
     private fun calculateTotal() {
         val total = _cartItems.value?.sumOf { it.subtotal } ?: 0.0
         _totalAmount.value = total
     }
-    
+
     fun checkout() {
         val items = _cartItems.value ?: emptyList()
         val total = _totalAmount.value ?: 0.0
-        
+
         if (items.isEmpty()) {
             _transactionResult.value = TransactionResult.Error("Keranjang kosong")
             return
         }
-        
+
         launch {
             try {
                 val transactionId = createTransactionUseCase(items, total)
+                clearCart() // Clear cart AFTER successful transaction
                 _transactionResult.postValue(TransactionResult.Success(transactionId))
-                clearCart()
             } catch (e: Exception) {
                 _transactionResult.postValue(TransactionResult.Error(e.message ?: "Transaksi gagal"))
             }
         }
     }
-    
+
     fun updateSearchQuery(query: String) {
         _searchQuery.value = query
     }
-    
+
     sealed class TransactionResult {
         data class Success(val transactionId: Long) : TransactionResult()
         data class Error(val message: String) : TransactionResult()

@@ -1,4 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Ini Kasir</string>
+    
+    <!-- Product -->
+    <string name="product_variant">Varian</string>
+    <string name="product_stock">Stok: %d</string>
+    <string name="product_stock_empty">Habis</string>
+    
+    <!-- Transaction -->
+    <string name="transaction_success">✅ Transaksi berhasil!</string>
+    <string name="transaction_failed">❌ %s</string>
+    <string name="transaction_detail">Transaksi #%1$d\n%2$s</string>
+    
+    <!-- Recap -->
+    <string name="recap_history">📊 Riwayat Rekap</string>
+    <string name="recap_no_data">Belum ada rekap</string>
+    <string name="recap_detail">📋 Detail Rekap #%d</string>
+    <string name="recap_period">Periode: %1$s - %2$s</string>
+    <string name="recap_transactions">Total Transaksi: %d</string>
+    <string name="recap_revenue">Total Pendapatan: Rp %s</string>
+    
+    <!-- Dialog -->
+    <string name="dialog_add_product">Tambah Produk</string>
+    <string name="dialog_edit_product">Edit Produk</string>
+    <string name="dialog_add_variant">Tambah Varian untuk %s</string>
+    <string name="dialog_has_variant">Apakah produk ini memiliki varian?</string>
+    <string name="dialog_variant_example">Contoh: Pop Ice dengan berbagai rasa</string>
+    <string name="dialog_add_variant_yes">Ya, tambah varian</string>
+    <string name="dialog_add_variant_no">Tidak, produk tunggal</string>
+    <string name="dialog_add_another">Tambah varian lain?</string>
+    
+    <!-- Messages -->
+    <string name="msg_product_added">Produk berhasil ditambahkan</string>
+    <string name="msg_product_updated">Produk berhasil diupdate</string>
+    <string name="msg_product_deleted">Produk berhasil dihapus</string>
+    <string name="msg_recap_success">✅ Rekap Berhasil</string>
+    <string name="msg_recap_failed">❌ Rekap Gagal</string>
+    <string name="msg_recap_created">%1$d transaksi telah direkap!\nTotal: Rp %2$s</string>
 </resources>

@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.asLiveData
 import com.inikasir.data.local.dao.TransactionDetailWithProduct
 import com.inikasir.data.local.entity.ProductEntity
+import com.inikasir.data.local.entity.RecapEntity
 import com.inikasir.data.local.entity.TransactionEntity
 import com.inikasir.data.repository.ProductRepository
 import com.inikasir.data.repository.TransactionRepository
@@ -13,6 +14,7 @@ import com.inikasir.domain.usecase.product.DeleteProductUseCase
 import com.inikasir.domain.usecase.product.GetAllProductsUseCase
 import com.inikasir.domain.usecase.product.UpdateProductUseCase
 import com.inikasir.domain.usecase.transaction.GetAllTransactionsUseCase
+import com.inikasir.domain.usecase.transaction.GetRecapsUseCase
 import com.inikasir.presentation.common.BaseViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.map
@@ -24,10 +26,12 @@ class AdminViewModel(
     private val updateProductUseCase: UpdateProductUseCase,
     private val deleteProductUseCase: DeleteProductUseCase,
     private val getAllTransactionsUseCase: GetAllTransactionsUseCase,
-    private val transactionRepository: TransactionRepository,  // Tambahkan ini
-    private val productRepository: ProductRepository           // Tambahkan ini
+    private val getRecapsUseCase: GetRecapsUseCase,
+    private val transactionRepository: TransactionRepository,
+    private val productRepository: ProductRepository
 ) : BaseViewModel() {
-    
+
+    // Products (main products only for display)
     val products = getAllProductsUseCase()
         .map { entities ->
             entities.map { entity ->
@@ -42,7 +46,7 @@ class AdminViewModel(
             }
         }
         .asLiveData()
-    
+
     // All Transactions (for history)
     val transactions = getAllTransactionsUseCase()
         .map { entities ->
@@ -57,32 +61,36 @@ class AdminViewModel(
             }
         }
         .asLiveData()
-    
+
+    // Recaps history
+    val recaps = getRecapsUseCase()
+        .asLiveData()
+
     // UI State
     private val _isLoading = MutableLiveData(false)
     val isLoading: LiveData<Boolean> = _isLoading
-    
+
     private val _message = MutableLiveData<String>()
     val message: LiveData<String> = _message
-    
+
     // Unrecapped Transactions
     private val _unrecappedTransactions = MutableLiveData<List<TransactionEntity>>()
     val unrecappedTransactions: LiveData<List<TransactionEntity>> = _unrecappedTransactions
-    
+
     // Recap Result
     private val _recapResult = MutableLiveData<RecapResult>()
     val recapResult: LiveData<RecapResult> = _recapResult
-    
+
     init {
         loadUnrecappedTransactions()
     }
-    
+
     fun addProduct(name: String, price: Double, stock: Int = 0, parentId: Long? = null, variantName: String? = null) {
         if (name.isBlank() || price <= 0) {
             _message.value = "Nama dan harga harus valid"
             return
         }
-        
+
         launch {
             try {
                 _isLoading.postValue(true)
@@ -95,17 +103,17 @@ class AdminViewModel(
             }
         }
     }
-    
-    fun updateProduct(id: Long, name: String, price: Double, stock: Int) {
+
+    fun updateProduct(id: Long, name: String, price: Double, stock: Int, parentId: Long? = null, variantName: String? = null) {
         if (name.isBlank() || price <= 0) {
             _message.value = "Nama dan harga harus valid"
             return
         }
-        
+
         launch {
             try {
                 _isLoading.postValue(true)
-                updateProductUseCase(id, name, price, stock)
+                updateProductUseCase(id, name, price, stock, parentId, variantName)
                 _message.postValue("Produk berhasil diupdate")
             } catch (e: Exception) {
                 _message.postValue("Gagal update produk: ${e.message}")
@@ -114,7 +122,7 @@ class AdminViewModel(
             }
         }
     }
-    
+
     fun deleteProduct(product: ProductEntity) {
         launch {
             try {
@@ -128,7 +136,7 @@ class AdminViewModel(
             }
         }
     }
-    
+
     fun loadUnrecappedTransactions() {
         launch {
             transactionRepository.getUnrecappedTransactions().collect { transactions ->
@@ -136,7 +144,7 @@ class AdminViewModel(
             }
         }
     }
-    
+
     fun createRecap() {
         launch {
             try {
@@ -157,7 +165,7 @@ class AdminViewModel(
             }
         }
     }
-    
+
     fun getTransactionDetail(transactionId: Long, callback: (TransactionEntity?, List<TransactionDetailWithProduct>) -> Unit) {
         launch {
             val (transaction, details) = transactionRepository.getTransactionWithDetails(transactionId)
@@ -166,7 +174,7 @@ class AdminViewModel(
             }
         }
     }
-    
+
     fun getMainProducts(callback: (List<ProductEntity>) -> Unit) {
         launch {
             productRepository.getMainProducts().collect { products ->
@@ -176,7 +184,7 @@ class AdminViewModel(
             }
         }
     }
-    
+
     fun getVariants(parentId: Long, callback: (List<ProductEntity>) -> Unit) {
         launch {
             productRepository.getVariants(parentId).collect { variants ->
@@ -186,12 +194,12 @@ class AdminViewModel(
             }
         }
     }
-    
+
     sealed class RecapResult {
         data class Success(val recapId: Long, val transactionCount: Int, val totalRevenue: Double) : RecapResult()
         data class Error(val message: String) : RecapResult()
     }
-    
+
     fun clearMessage() {
         _message.value = ""
     }

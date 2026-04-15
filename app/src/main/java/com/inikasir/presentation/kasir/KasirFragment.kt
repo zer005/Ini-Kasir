@@ -97,6 +97,7 @@ class KasirFragment : Fragment() {
     }
     
     private fun observeData() {
+        // Observe products from database
         viewModel.products.observe(viewLifecycleOwner) { products ->
             val query = viewModel.searchQuery.value ?: ""
             val filteredProducts = if (query.isEmpty()) {

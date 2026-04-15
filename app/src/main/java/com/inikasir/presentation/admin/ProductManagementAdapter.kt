@@ -33,13 +33,30 @@ class ProductManagementAdapter(
     ) : RecyclerView.ViewHolder(binding.root) {
         
         fun bind(product: ProductEntity) {
-            binding.tvProductName.text = product.name
+            // Display product name with variant info
+            val displayName = if (product.variantName != null) {
+                "${product.name} - ${product.variantName}"
+            } else {
+                product.name
+            }
+            binding.tvProductName.text = displayName
             binding.tvProductPrice.text = "Rp ${String.format("%,.0f", product.price)}"
-            
+
+            // Display stock info
+            binding.tvStock.text = "Stok: ${product.stock}"
+
+            // Show/hide variant badge
+            if (product.variantName != null) {
+                binding.tvVariantBadge.visibility = android.view.View.VISIBLE
+                binding.tvVariantBadge.text = "Varian"
+            } else {
+                binding.tvVariantBadge.visibility = android.view.View.GONE
+            }
+
             binding.btnEdit.setOnClickListener {
                 onEditClick(product)
             }
-            
+
             binding.btnDelete.setOnClickListener {
                 onDeleteClick(product)
             }

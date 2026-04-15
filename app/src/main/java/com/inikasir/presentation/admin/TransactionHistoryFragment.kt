@@ -154,8 +154,45 @@ class TransactionHistoryFragment : Fragment() {
     }
     
     private fun showRecapHistoryDialog() {
-        // Navigate to RecapHistoryFragment or show dialog with recap list
-        // Implementation depends on your UI design
+        val recaps = viewModel.recaps.value
+        if (recaps.isNullOrEmpty()) {
+            AlertDialog.Builder(requireContext())
+                .setTitle("📊 Riwayat Rekap")
+                .setMessage("Belum ada rekap")
+                .setPositiveButton("OK", null)
+                .show()
+            return
+        }
+
+        val dateFormat = SimpleDateFormat("dd MMM yyyy", Locale("id", "ID"))
+        val items = recaps.map { recap ->
+            "${dateFormat.format(Date(recap.startDate))} - ${dateFormat.format(Date(recap.endDate))}\n" +
+            "${recap.transactionCount} transaksi | Rp ${String.format("%,.0f", recap.totalRevenue)}"
+        }.toTypedArray()
+
+        AlertDialog.Builder(requireContext())
+            .setTitle("📊 Riwayat Rekap")
+            .setItems(items) { _, which ->
+                val selectedRecap = recaps[which]
+                showRecapDetailDialog(selectedRecap)
+            }
+            .setPositiveButton("Tutup", null)
+            .show()
+    }
+
+    private fun showRecapDetailDialog(recap: com.inikasir.data.local.entity.RecapEntity) {
+        val dateFormat = SimpleDateFormat("dd MMM yyyy HH:mm", Locale("id", "ID"))
+        val message = """
+            Periode: ${dateFormat.format(Date(recap.startDate))} - ${dateFormat.format(Date(recap.endDate))}
+            Total Transaksi: ${recap.transactionCount}
+            Total Pendapatan: Rp ${String.format("%,.0f", recap.totalRevenue)}
+        """.trimIndent()
+
+        AlertDialog.Builder(requireContext())
+            .setTitle("📋 Detail Rekap #${recap.id}")
+            .setMessage(message)
+            .setPositiveButton("OK", null)
+            .show()
     }
     
     override fun onDestroyView() {

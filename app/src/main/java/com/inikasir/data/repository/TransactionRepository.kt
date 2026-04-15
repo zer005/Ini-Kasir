@@ -1,5 +1,6 @@
 package com.inikasir.data.repository
 
+import androidx.room.withTransaction
 import com.inikasir.data.local.AppDatabase
 import com.inikasir.data.local.dao.TransactionDetailWithProduct
 import com.inikasir.data.local.entity.RecapEntity
@@ -11,11 +12,20 @@ import kotlinx.coroutines.flow.Flow
 class TransactionRepository(private val database: AppDatabase) {
     
     suspend fun createTransaction(cartItems: List<CartItem>, total: Double): Long {
-        // Insert transaction
         val transaction = TransactionEntity(total = total)
-        val transactionId = database.transactionDao().insert(transaction)
         
-        // Insert transaction details
+        // Validate stock before transaction
+        cartItems.forEach { item ->
+            val product = database.productDao().getProductById(item.productId)
+            if (product == null || product.stock < item.quantity) {
+                throw Exception("Stok tidak cukup untuk: ${item.productName}")
+            }
+        }
+
+        // Insert transaction first to get the ID
+        val transactionId = database.transactionDao().insert(transaction)
+
+        // Create details with the transaction ID
         val details = cartItems.map { item ->
             TransactionDetailEntity(
                 transactionId = transactionId,
@@ -25,13 +35,18 @@ class TransactionRepository(private val database: AppDatabase) {
                 subtotal = item.subtotal
             )
         }
-        database.transactionDetailDao().insertAll(details)
-        
-        // Decrease stock
-        cartItems.forEach { item ->
-            database.productDao().decreaseStock(item.productId, item.quantity)
+
+        // Execute details insert and stock update in a transaction
+        database.withTransaction {
+            // Insert all details
+            database.transactionDetailDao().insertAll(details)
+
+            // Decrease stock for each item
+            cartItems.forEach { item ->
+                database.productDao().decreaseStock(item.productId, item.quantity)
+            }
         }
-        
+
         return transactionId
     }
     
