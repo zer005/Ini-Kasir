@@ -6,13 +6,24 @@ import kotlinx.coroutines.flow.Flow
 
 class ProductRepository(private val database: AppDatabase) {
     
-    suspend fun insertProduct(name: String, price: Double): Long {
-        val product = ProductEntity(name = name, price = price)
+    suspend fun insertProduct(
+        name: String, 
+        price: Double, 
+        stock: Int = 0,
+        parentId: Long? = null,
+        variantName: String? = null
+    ): Long {
+        val product = ProductEntity(
+            name = name,
+            price = price,
+            stock = stock,
+            parentId = parentId,
+            variantName = variantName
+        )
         return database.productDao().insert(product)
     }
     
-    suspend fun updateProduct(id: Long, name: String, price: Double) {
-        val product = ProductEntity(id = id, name = name, price = price)
+    suspend fun updateProduct(product: ProductEntity) {
         database.productDao().update(product)
     }
     
@@ -24,7 +35,19 @@ class ProductRepository(private val database: AppDatabase) {
         return database.productDao().getProductById(id)
     }
     
-    fun getAllProducts(): Flow<List<ProductEntity>> {
-        return database.productDao().getAllProducts()
+    fun getMainProducts(): Flow<List<ProductEntity>> {
+        return database.productDao().getMainProducts()
+    }
+    
+    fun getVariants(parentId: Long): Flow<List<ProductEntity>> {
+        return database.productDao().getVariants(parentId)
+    }
+    
+    suspend fun decreaseStock(productId: Long, quantity: Int): Boolean {
+        return database.productDao().decreaseStock(productId, quantity) > 0
+    }
+    
+    suspend fun increaseStock(productId: Long, quantity: Int) {
+        database.productDao().increaseStock(productId, quantity)
     }
 }

@@ -7,6 +7,6 @@ import kotlinx.coroutines.flow.Flow
 class GetAllProductsUseCase(private val productRepository: ProductRepository) {
     
     operator fun invoke(): Flow<List<ProductEntity>> {
-        return productRepository.getAllProducts()
+        return productRepository.getMainProducts() // Ganti ke getMainProducts()
     }
 }

@@ -52,7 +52,7 @@ class KasirFragment : Fragment() {
         
         val spanCount = resources.getInteger(R.integer.product_grid_span)
         
-        binding.rvProducts!!.apply {
+        binding.rvProducts.apply {
             layoutManager = GridLayoutManager(requireContext(), spanCount)
             adapter = productAdapter
         }
@@ -83,7 +83,7 @@ class KasirFragment : Fragment() {
             viewModel.clearCart()
         }
         
-        binding.etSearch!!.setOnQueryTextListener(object : androidx.appcompat.widget.SearchView.OnQueryTextListener {
+        binding.etSearch.setOnQueryTextListener(object : androidx.appcompat.widget.SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 query?.let { viewModel.updateSearchQuery(it) }
                 return true

@@ -1,5 +1,6 @@
 package com.inikasir.presentation.kasir
 
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
@@ -31,10 +32,32 @@ class ProductGridAdapter(
     ) : RecyclerView.ViewHolder(binding.root) {
         
         fun bind(product: ProductEntity) {
-            binding.tvProductName.text = product.name
+            val displayName = if (product.variantName != null) {
+                "${product.name} (${product.variantName})"
+            } else {
+                product.name
+            }
+            
+            binding.tvProductName.text = displayName
             binding.tvProductPrice.text = "Rp ${String.format("%,.0f", product.price)}"
+            
+            // Stock info
+            if (product.stock > 0) {
+                binding.tvStock.text = "Stok: ${product.stock}"
+                binding.tvStock.setTextColor(Color.GRAY)
+                binding.root.alpha = 1.0f
+                binding.root.isEnabled = true
+            } else {
+                binding.tvStock.text = "Habis"
+                binding.tvStock.setTextColor(Color.RED)
+                binding.root.alpha = 0.5f
+                binding.root.isEnabled = false
+            }
+            
             binding.root.setOnClickListener {
-                onItemClick(product)
+                if (product.stock > 0) {
+                    onItemClick(product)
+                }
             }
         }
     }

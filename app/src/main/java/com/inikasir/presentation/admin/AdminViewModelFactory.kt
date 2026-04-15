@@ -34,7 +34,9 @@ class AdminViewModelFactory(
                 addProductUseCase,
                 updateProductUseCase,
                 deleteProductUseCase,
-                getAllTransactionsUseCase
+                getAllTransactionsUseCase,
+                transactionRepository,  // Tambahkan
+                productRepository       // Tambahkan
             ) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")

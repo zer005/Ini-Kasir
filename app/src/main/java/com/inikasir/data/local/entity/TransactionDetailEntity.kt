@@ -2,6 +2,7 @@ package com.inikasir.data.local.entity
 
 import androidx.room.Entity
 import androidx.room.ForeignKey
+import androidx.room.Index
 import androidx.room.PrimaryKey
 
 @Entity(
@@ -19,6 +20,10 @@ import androidx.room.PrimaryKey
             childColumns = ["productId"],
             onDelete = ForeignKey.CASCADE
         )
+    ],
+    indices = [
+        Index("transactionId"),
+        Index("productId")
     ]
 )
 data class TransactionDetailEntity(
@@ -27,5 +32,6 @@ data class TransactionDetailEntity(
     val transactionId: Long,
     val productId: Long,
     val quantity: Int,
+    val price: Double, // harga saat transaksi
     val subtotal: Double
 )

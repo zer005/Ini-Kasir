@@ -17,4 +17,23 @@ interface TransactionDetailDao {
     
     @Query("SELECT * FROM transaction_details")
     suspend fun getAllDetailsSync(): List<TransactionDetailEntity>
+    
+    @Query("""
+        SELECT td.*, p.name as productName, p.variantName 
+        FROM transaction_details td 
+        INNER JOIN products p ON td.productId = p.id 
+        WHERE td.transactionId = :transactionId
+    """)
+    suspend fun getDetailsWithProduct(transactionId: Long): List<TransactionDetailWithProduct>
 }
+
+data class TransactionDetailWithProduct(
+    val id: Long,
+    val transactionId: Long,
+    val productId: Long,
+    val quantity: Int,
+    val price: Double,
+    val subtotal: Double,
+    val productName: String,
+    val variantName: String?
+)

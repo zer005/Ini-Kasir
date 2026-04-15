@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -38,11 +39,14 @@ class TransactionHistoryFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupRecyclerView()
+        setupListeners()
         observeData()
     }
     
     private fun setupRecyclerView() {
-        transactionAdapter = TransactionHistoryAdapter()
+        transactionAdapter = TransactionHistoryAdapter { transaction ->
+            showTransactionDetailDialog(transaction.id)
+        }
         
         binding.rvTransactions.apply {
             layoutManager = LinearLayoutManager(requireContext())
@@ -50,17 +54,30 @@ class TransactionHistoryFragment : Fragment() {
         }
     }
     
+    private fun setupListeners() {
+        binding.btnRecap.setOnClickListener {
+            showRecapDialog()
+        }
+        
+        binding.btnViewRecapHistory.setOnClickListener {
+            showRecapHistoryDialog()
+        }
+    }
+    
     private fun observeData() {
-        viewModel.transactions.observe(viewLifecycleOwner) { transactions ->
+        // Observe unrecapped transactions
+        viewModel.unrecappedTransactions.observe(viewLifecycleOwner) { transactions ->
             transactionAdapter.submitList(transactions)
             
             // Update empty state
             if (transactions.isEmpty()) {
                 binding.emptyState.visibility = View.VISIBLE
                 binding.rvTransactions.visibility = View.GONE
+                binding.btnRecap.isEnabled = false
             } else {
                 binding.emptyState.visibility = View.GONE
                 binding.rvTransactions.visibility = View.VISIBLE
+                binding.btnRecap.isEnabled = true
             }
             
             // Update summary
@@ -70,6 +87,75 @@ class TransactionHistoryFragment : Fragment() {
             binding.tvTotalTransactions.text = "$totalTransactions"
             binding.tvTotalRevenue.text = "Rp ${String.format("%,.0f", totalRevenue)}"
         }
+        
+        viewModel.recapResult.observe(viewLifecycleOwner) { result ->
+            when (result) {
+                is AdminViewModel.RecapResult.Success -> {
+                    AlertDialog.Builder(requireContext())
+                        .setTitle("✅ Rekap Berhasil")
+                        .setMessage("${result.transactionCount} transaksi telah direkap!\nTotal: Rp ${String.format("%,.0f", result.totalRevenue)}")
+                        .setPositiveButton("OK", null)
+                        .show()
+                }
+                is AdminViewModel.RecapResult.Error -> {
+                    AlertDialog.Builder(requireContext())
+                        .setTitle("❌ Rekap Gagal")
+                        .setMessage(result.message)
+                        .setPositiveButton("OK", null)
+                        .show()
+                }
+                else -> {}
+            }
+        }
+    }
+    
+    private fun showRecapDialog() {
+        val totalTransactions = viewModel.unrecappedTransactions.value?.size ?: 0
+        val totalRevenue = viewModel.unrecappedTransactions.value?.sumOf { it.total } ?: 0.0
+        
+        AlertDialog.Builder(requireContext())
+            .setTitle("📊 Rekap Transaksi")
+            .setMessage("""
+                Transaksi: $totalTransactions
+                Total: Rp ${String.format("%,.0f", totalRevenue)}
+                
+                Semua transaksi yang belum direkap akan dipindahkan ke riwayat rekap.
+                
+                Lanjutkan?
+            """.trimIndent())
+            .setPositiveButton("✅ Rekap Sekarang") { _, _ ->
+                viewModel.createRecap()
+            }
+            .setNegativeButton("❌ Batal", null)
+            .show()
+    }
+    
+    private fun showTransactionDetailDialog(transactionId: Long) {
+        viewModel.getTransactionDetail(transactionId) { transaction, details ->
+            val dialogView = layoutInflater.inflate(R.layout.dialog_transaction_detail, null)
+            val tvTransactionInfo = dialogView.findViewById<TextView>(R.id.tvTransactionInfo)
+            val rvDetailItems = dialogView.findViewById<androidx.recyclerview.widget.RecyclerView>(R.id.rvDetailItems)
+            val tvTotalDetail = dialogView.findViewById<TextView>(R.id.tvTotalDetail)
+            
+            val dateFormat = SimpleDateFormat("dd MMM yyyy HH:mm", Locale("id", "ID"))
+            tvTransactionInfo.text = "Transaksi #${transaction?.id ?: ""}\n${dateFormat.format(Date(transaction?.date ?: 0))}"
+            tvTotalDetail.text = "Total: Rp ${String.format("%,.0f", transaction?.total ?: 0.0)}"
+            
+            val detailAdapter = TransactionDetailAdapter()
+            rvDetailItems.layoutManager = LinearLayoutManager(requireContext())
+            rvDetailItems.adapter = detailAdapter
+            detailAdapter.submitList(details)
+            
+            AlertDialog.Builder(requireContext())
+                .setView(dialogView)
+                .setPositiveButton("Tutup", null)
+                .show()
+        }
+    }
+    
+    private fun showRecapHistoryDialog() {
+        // Navigate to RecapHistoryFragment or show dialog with recap list
+        // Implementation depends on your UI design
     }
     
     override fun onDestroyView() {

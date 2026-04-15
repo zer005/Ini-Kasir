@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="20dp">
+    
+    <TextView
+        android:id="@+id/tvTransactionInfo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Transaksi #001\n10 Apr 2025 14:30"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="16dp" />
+    
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/gray_light"
+        android:layout_marginBottom="16dp" />
+    
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvDetailItems"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp" />
+    
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/gray_light"
+        android:layout_marginBottom="16dp" />
+    
+    <TextView
+        android:id="@+id/tvTotalDetail"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Total: Rp 0"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:textColor="@color/primary"
+        android:gravity="end" />
+    
+</LinearLayout>

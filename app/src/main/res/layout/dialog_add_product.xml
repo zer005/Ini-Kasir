@@ -11,8 +11,6 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
         app:boxBackgroundMode="outline"
-        app:hintTextColor="@color/primary"
-        app:boxStrokeColor="@color/primary"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
         
         <com.google.android.material.textfield.TextInputEditText
@@ -28,10 +26,8 @@
     <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
+        android:layout_marginBottom="16dp"
         app:boxBackgroundMode="outline"
-        app:hintTextColor="@color/primary"
-        app:boxStrokeColor="@color/primary"
         app:prefixText="Rp "
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
         
@@ -41,6 +37,21 @@
             android:layout_height="wrap_content"
             android:hint="Harga"
             android:inputType="numberDecimal" />
+            
+    </com.google.android.material.textfield.TextInputLayout>
+    
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:boxBackgroundMode="outline"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etProductStock"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Stok"
+            android:inputType="number" />
             
     </com.google.android.material.textfield.TextInputLayout>
     

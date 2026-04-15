@@ -75,11 +75,11 @@ class BackupViewModel(
             
             FileWriter(file).use { writer ->
                 // Header
-                writer.write("id,name,price\n")
+                writer.write("id,name,price,stock,parentId,variantName\n")
                 
                 // Data
                 products.forEach { product ->
-                    writer.write("${product.id},${product.name},${product.price}\n")
+                    writer.write("${product.id},${product.name},${product.price},${product.stock},${product.parentId ?: ""},${product.variantName ?: ""}\n")
                 }
             }
         }
@@ -107,11 +107,11 @@ class BackupViewModel(
             
             FileWriter(file).use { writer ->
                 // Header
-                writer.write("id,transaction_id,product_id,quantity,subtotal\n")
+                writer.write("id,transaction_id,product_id,quantity,price,subtotal\n")
                 
                 // Data
                 details.forEach { detail ->
-                    writer.write("${detail.id},${detail.transactionId},${detail.productId},${detail.quantity},${detail.subtotal}\n")
+                    writer.write("${detail.id},${detail.transactionId},${detail.productId},${detail.quantity},${detail.price},${detail.subtotal}\n")
                 }
             }
         }
@@ -156,13 +156,21 @@ class BackupViewModel(
             file.bufferedReader().useLines { lines ->
                 lines.drop(1).forEach { line ->  // Skip header
                     val parts = line.split(",")
-                    if (parts.size >= 3) {
+                    if (parts.size >= 4) {  // id, name, price, stock
                         val id = parts[0].toLongOrNull() ?: 0L
                         val name = parts[1]
                         val price = parts[2].toDoubleOrNull() ?: 0.0
-                        
+                        val stock = parts[3].toIntOrNull() ?: 0
+
                         if (name.isNotBlank() && price > 0) {
-                            val product = ProductEntity(id = id, name = name, price = price)
+                            val product = ProductEntity(
+                                id = id, 
+                                name = name, 
+                                price = price,
+                                stock = stock,
+                                parentId = null,
+                                variantName = null
+                            )
                             database.productDao().insert(product)
                             count++
                         }
@@ -200,18 +208,20 @@ class BackupViewModel(
             file.bufferedReader().useLines { lines ->
                 lines.drop(1).forEach { line ->
                     val parts = line.split(",")
-                    if (parts.size >= 5) {
+                    if (parts.size >= 6) {  // Sekarang butuh 6 field
                         val id = parts[0].toLongOrNull() ?: 0L
                         val transactionId = parts[1].toLongOrNull() ?: 0L
                         val productId = parts[2].toLongOrNull() ?: 0L
                         val quantity = parts[3].toIntOrNull() ?: 1
-                        val subtotal = parts[4].toDoubleOrNull() ?: 0.0
+                        val price = parts[4].toDoubleOrNull() ?: 0.0    // Tambah price
+                        val subtotal = parts[5].toDoubleOrNull() ?: 0.0 // subtotal jadi index 5
                         
                         val detail = TransactionDetailEntity(
                             id = id,
                             transactionId = transactionId,
                             productId = productId,
                             quantity = quantity,
+                            price = price,      // ✅ Tambah parameter price
                             subtotal = subtotal
                         )
                         database.transactionDetailDao().insert(detail)

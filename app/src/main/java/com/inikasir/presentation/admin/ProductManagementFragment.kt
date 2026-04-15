@@ -87,6 +87,7 @@ class ProductManagementFragment : Fragment() {
         val dialogView = layoutInflater.inflate(R.layout.dialog_add_product, null)
         val etName = dialogView.findViewById<EditText>(R.id.etProductName)
         val etPrice = dialogView.findViewById<EditText>(R.id.etProductPrice)
+        val etStock = dialogView.findViewById<EditText>(R.id.etProductStock) // Tambah field stok
         
         AlertDialog.Builder(requireContext())
             .setTitle("Tambah Produk")
@@ -94,7 +95,8 @@ class ProductManagementFragment : Fragment() {
             .setPositiveButton("Simpan") { _, _ ->
                 val name = etName.text.toString()
                 val price = etPrice.text.toString().toDoubleOrNull() ?: 0.0
-                viewModel.addProduct(name, price)
+                val stock = etStock.text.toString().toIntOrNull() ?: 0  // Ambil nilai stok
+                viewModel.addProduct(name, price, stock)  // Tambah parameter stock
             }
             .setNegativeButton("Batal", null)
             .show()
@@ -104,9 +106,11 @@ class ProductManagementFragment : Fragment() {
         val dialogView = layoutInflater.inflate(R.layout.dialog_add_product, null)
         val etName = dialogView.findViewById<EditText>(R.id.etProductName)
         val etPrice = dialogView.findViewById<EditText>(R.id.etProductPrice)
+        val etStock = dialogView.findViewById<EditText>(R.id.etProductStock) // Tambah field stok
         
         etName.setText(product.name)
         etPrice.setText(product.price.toString())
+        etStock.setText(product.stock.toString())  // Set nilai stok
         
         AlertDialog.Builder(requireContext())
             .setTitle("Edit Produk")
@@ -114,7 +118,8 @@ class ProductManagementFragment : Fragment() {
             .setPositiveButton("Update") { _, _ ->
                 val name = etName.text.toString()
                 val price = etPrice.text.toString().toDoubleOrNull() ?: 0.0
-                viewModel.updateProduct(product.id, name, price)
+                val stock = etStock.text.toString().toIntOrNull() ?: 0  // Ambil nilai stok
+                viewModel.updateProduct(product.id, name, price, stock)  // Tambah parameter stock
             }
             .setNegativeButton("Batal", null)
             .show()

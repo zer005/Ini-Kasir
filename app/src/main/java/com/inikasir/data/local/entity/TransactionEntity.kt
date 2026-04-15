@@ -8,5 +8,7 @@ data class TransactionEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,
     val total: Double,
-    val date: Long = System.currentTimeMillis()
+    val date: Long = System.currentTimeMillis(),
+    val isRecapped: Boolean = false, // sudah direkap atau belum
+    val recapId: Long? = null // ID rekap (untuk grouping)
 )
