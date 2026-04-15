@@ -50,8 +50,10 @@ class KasirFragment : Fragment() {
             viewModel.addToCart(product)
         }
         
-        binding.rvProducts.apply {
-            layoutManager = GridLayoutManager(requireContext(), 2)
+        val spanCount = resources.getInteger(R.integer.product_grid_span)
+        
+        binding.rvProducts!!.apply {
+            layoutManager = GridLayoutManager(requireContext(), spanCount)
             adapter = productAdapter
         }
     }
@@ -66,48 +68,75 @@ class KasirFragment : Fragment() {
             }
         )
         
-        binding.rvCart.apply {
+        binding.rvCart!!.apply {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = cartAdapter
         }
     }
     
     private fun setupListeners() {
-        binding.btnCheckout.setOnClickListener {
+        binding.btnCheckout!!.setOnClickListener {
             viewModel.checkout()
         }
         
-        binding.btnClearCart.setOnClickListener {
+        binding.btnClearCart!!.setOnClickListener {
             viewModel.clearCart()
         }
+        
+        binding.etSearch!!.setOnQueryTextListener(object : androidx.appcompat.widget.SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                query?.let { viewModel.updateSearchQuery(it) }
+                return true
+            }
+            
+            override fun onQueryTextChange(newText: String?): Boolean {
+                newText?.let { viewModel.updateSearchQuery(it) }
+                return true
+            }
+        })
     }
     
     private fun observeData() {
         viewModel.products.observe(viewLifecycleOwner) { products ->
-            productAdapter.submitList(products)
+            val query = viewModel.searchQuery.value ?: ""
+            val filteredProducts = if (query.isEmpty()) {
+                products
+            } else {
+                products.filter { 
+                    it.name.contains(query, ignoreCase = true) 
+                }
+            }
+            productAdapter.submitList(filteredProducts)
         }
         
         viewModel.cartItems.observe(viewLifecycleOwner) { cartItems ->
             cartAdapter.submitList(cartItems)
-            binding.tvEmptyCart.visibility = if (cartItems.isEmpty()) View.VISIBLE else View.GONE
-            binding.rvCart.visibility = if (cartItems.isEmpty()) View.GONE else View.VISIBLE
+            
+            // Update visibility
+            if (cartItems.isEmpty()) {
+                binding.tvEmptyCart!!.visibility = View.VISIBLE
+                binding.rvCart!!.visibility = View.GONE
+            } else {
+                binding.tvEmptyCart!!.visibility = View.GONE
+                binding.rvCart!!.visibility = View.VISIBLE
+            }
             
             // Update cart count
             val itemCount = cartItems.sumOf { it.quantity }
-            binding.tvCartCount.text = if (itemCount > 0) "$itemCount item" else "0 item"
+            binding.tvCartCount!!.text = if (itemCount > 0) "$itemCount item" else "0 item"
         }
         
         viewModel.totalAmount.observe(viewLifecycleOwner) { total ->
-            binding.tvTotal.text = "Total: Rp ${String.format("%,.0f", total)}"
+            binding.tvTotal!!.text = "Rp ${String.format("%,.0f", total)}"
         }
         
         viewModel.transactionResult.observe(viewLifecycleOwner) { result ->
             when (result) {
                 is KasirViewModel.TransactionResult.Success -> {
-                    Toast.makeText(requireContext(), "Transaksi berhasil!", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), "✅ Transaksi berhasil!", Toast.LENGTH_SHORT).show()
                 }
                 is KasirViewModel.TransactionResult.Error -> {
-                    Toast.makeText(requireContext(), result.message, Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), "❌ ${result.message}", Toast.LENGTH_SHORT).show()
                 }
                 else -> {}
             }

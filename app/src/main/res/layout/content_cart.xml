@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="@dimen/padding_large">
+    
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginBottom="@dimen/padding_medium">
+        
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="🛒 Keranjang"
+            android:textSize="@dimen/text_large"
+            android:textStyle="bold"
+            android:textColor="@color/text_primary" />
+            
+        <TextView
+            android:id="@+id/tvCartCount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="0 item"
+            android:textSize="@dimen/text_medium"
+            android:textColor="@color/text_secondary" />
+            
+    </LinearLayout>
+    
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/gray_light"
+        android:layout_marginBottom="@dimen/padding_medium" />
+    
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvCart"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+        
+    <TextView
+        android:id="@+id/tvEmptyCart"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:text="🛍️ Keranjang kosong\n\nTap produk untuk menambahkan"
+        android:gravity="center"
+        android:textSize="@dimen/text_medium"
+        android:textColor="@color/text_secondary"
+        android:visibility="gone" />
+    
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/gray_light"
+        android:layout_marginVertical="@dimen/padding_medium" />
+    
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginBottom="@dimen/padding_medium">
+        
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Total"
+            android:textSize="@dimen/text_large"
+            android:textColor="@color/text_secondary" />
+            
+        <TextView
+            android:id="@+id/tvTotal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Rp 0"
+            android:textSize="@dimen/text_xlarge"
+            android:textStyle="bold"
+            android:textColor="@color/primary" />
+            
+    </LinearLayout>
+    
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnClearCart"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/button_height"
+            android:layout_weight="1"
+            android:layout_marginEnd="@dimen/padding_small"
+            android:text="Clear"
+            android:textAllCaps="false"
+            android:textSize="@dimen/text_medium"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
+            
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnCheckout"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/button_height"
+            android:layout_weight="1"
+            android:layout_marginStart="@dimen/padding_small"
+            android:text="💰 Bayar"
+            android:textAllCaps="false"
+            android:textSize="@dimen/text_medium"
+            app:backgroundTint="@color/success" />
+            
+    </LinearLayout>
+    
+</LinearLayout>

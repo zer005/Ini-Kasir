@@ -3,16 +3,16 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="6dp"
-    app:cardElevation="4dp"
-    app:cardCornerRadius="12dp"
+    android:layout_margin="@dimen/padding_small"
+    app:cardElevation="@dimen/card_elevation"
+    app:cardCornerRadius="@dimen/card_corner_radius"
     app:strokeWidth="0dp">
     
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="16dp"
+        android:padding="@dimen/padding_medium"
         android:background="?attr/selectableItemBackground">
         
         <TextView
@@ -20,7 +20,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Product Name"
-            android:textSize="16sp"
+            android:textSize="@dimen/text_medium"
             android:textStyle="bold"
             android:textColor="@color/text_primary"
             android:maxLines="2"
@@ -30,9 +30,9 @@
             android:id="@+id/tvProductPrice"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="@dimen/padding_small"
             android:text="Rp 0"
-            android:textSize="15sp"
+            android:textSize="@dimen/text_medium"
             android:textColor="@color/primary"
             android:textStyle="bold" />
             
