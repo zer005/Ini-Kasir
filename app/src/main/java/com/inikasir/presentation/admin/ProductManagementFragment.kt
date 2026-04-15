@@ -92,15 +92,17 @@ class ProductManagementFragment : Fragment() {
         val dialogView = layoutInflater.inflate(R.layout.dialog_add_product, null)
         val etName = dialogView.findViewById<EditText>(R.id.etProductName)
         val etPrice = dialogView.findViewById<EditText>(R.id.etProductPrice)
+        
+        // Hide stock field initially - will show after choosing product type
         val etStock = dialogView.findViewById<EditText>(R.id.etProductStock)
+        etStock.visibility = View.GONE
 
         AlertDialog.Builder(requireContext())
             .setTitle("Tambah Produk")
             .setView(dialogView)
-            .setPositiveButton("Simpan") { _, _ ->
+            .setPositiveButton("Lanjut") { _, _ ->
                 val name = etName.text.toString().trim()
                 val price = etPrice.text.toString().toDoubleOrNull() ?: 0.0
-                val stock = etStock.text.toString().toIntOrNull() ?: 0
 
                 if (name.isBlank() || price <= 0) {
                     android.widget.Toast.makeText(
@@ -112,66 +114,83 @@ class ProductManagementFragment : Fragment() {
                 }
 
                 // Tanya apakah ini varian atau produk utama
-                showProductTypeDialog(name, price, stock, null, null)
+                showProductTypeDialog(name, price)
             }
             .setNegativeButton("Batal", null)
             .show()
     }
 
-    private fun showProductTypeDialog(
-        name: String,
-        price: Double,
-        stock: Int,
-        parentId: Long?,
-        variantName: String?
-    ) {
-        if (parentId == null) {
-            // Ini produk utama, tanyakan apakah ada varian
-            AlertDialog.Builder(requireContext())
-                .setTitle("Apakah produk ini memiliki varian?")
-                .setMessage("Contoh: Pop Ice dengan berbagai rasa")
-                .setPositiveButton("Ya, tambah varian") { _, _ ->
-                    showAddVariantDialog(name, price, stock)
-                }
-                .setNegativeButton("Tidak, produk tunggal") { _, _ ->
-                    viewModel.addProduct(name, price, stock)
-                }
-                .show()
-        } else {
-            // Ini varian
-            viewModel.addProduct(name, price, stock, parentId, variantName)
-        }
+    private fun showProductTypeDialog(name: String, price: Double) {
+        AlertDialog.Builder(requireContext())
+            .setTitle("Apakah produk ini memiliki varian?")
+            .setMessage("Contoh: Pop Ice dengan berbagai rasa")
+            .setPositiveButton("Ya, banyak varian") { _, _ ->
+                showAddVariantDialog(name, price)
+            }
+            .setNegativeButton("Tidak, produk tunggal") { _, _ ->
+                // Show stock input for single product
+                showStockInputDialog(name, price, isVariant = false)
+            }
+            .show()
     }
 
-    private fun showAddVariantDialog(parentName: String, parentPrice: Double, parentStock: Int) {
-        // Pertama, simpan produk utama
+    private fun showStockInputDialog(name: String, price: Double, isVariant: Boolean, parentId: Long? = null, variantName: String? = null) {
+        val dialogView = layoutInflater.inflate(R.layout.dialog_add_product, null)
+        val etStock = dialogView.findViewById<EditText>(R.id.etProductStock)
+        
+        // Hide name and price fields
+        dialogView.findViewById<View>(R.id.etProductName).visibility = View.GONE
+        dialogView.findViewById<View>(R.id.etProductPrice).visibility = View.GONE
+        
+        etStock.hint = "Stok"
+        etStock.setText("0")
+
+        AlertDialog.Builder(requireContext())
+            .setTitle(if (isVariant) "Tambah Stok Varian" else "Tambah Stok Produk")
+            .setView(dialogView)
+            .setPositiveButton("Simpan") { _, _ ->
+                val stock = etStock.text.toString().toIntOrNull() ?: 0
+                
+                if (isVariant) {
+                    viewModel.addProduct(name, price, stock, parentId, variantName)
+                } else {
+                    viewModel.addProduct(name, price, stock)
+                }
+            }
+            .setNegativeButton("Batal", null)
+            .show()
+    }
+
+    private fun showAddVariantDialog(parentName: String, parentPrice: Double) {
+        // First, save the main product with stock 0
         viewLifecycleOwner.lifecycleScope.launch {
             try {
                 val parentId = withContext(Dispatchers.IO) {
                     AppDatabase.getInstance(requireContext())
                         .let { db ->
                             val productRepo = com.inikasir.data.repository.ProductRepository(db)
-                            productRepo.insertProduct(parentName, parentPrice, parentStock)
+                            productRepo.insertProduct(parentName, parentPrice, 0)
                         }
                 }
 
-                // Tampilkan dialog untuk tambah varian
+                // Show dialog to add variant
                 val dialogView = layoutInflater.inflate(R.layout.dialog_add_product, null)
                 val etVariantName = dialogView.findViewById<EditText>(R.id.etProductName)
                 val etVariantPrice = dialogView.findViewById<EditText>(R.id.etProductPrice)
+                
+                // Hide stock field - will be shown in next step
                 val etVariantStock = dialogView.findViewById<EditText>(R.id.etProductStock)
+                etVariantStock.visibility = View.GONE
 
                 etVariantName.hint = "Nama Varian (contoh: Rasa Strawberry)"
                 etVariantPrice.setText(parentPrice.toString())
-                etVariantStock.setText(parentStock.toString())
 
                 AlertDialog.Builder(requireContext())
                     .setTitle("Tambah Varian untuk $parentName")
                     .setView(dialogView)
-                    .setPositiveButton("Tambah Varian") { _, _ ->
+                    .setPositiveButton("Lanjut") { _, _ ->
                         val variantName = etVariantName.text.toString().trim()
                         val variantPrice = etVariantPrice.text.toString().toDoubleOrNull() ?: parentPrice
-                        val variantStock = etVariantStock.text.toString().toIntOrNull() ?: parentStock
 
                         if (variantName.isBlank()) {
                             android.widget.Toast.makeText(
@@ -182,19 +201,20 @@ class ProductManagementFragment : Fragment() {
                             return@setPositiveButton
                         }
 
-                        viewModel.addProduct(parentName, variantPrice, variantStock, parentId, variantName)
+                        // Now ask for stock
+                        showStockInputDialog(parentName, variantPrice, isVariant = true, parentId = parentId, variantName = variantName)
 
-                        // Tanya apakah mau tambah varian lagi
+                        // Ask if want to add more variants
                         AlertDialog.Builder(requireContext())
                             .setTitle("Tambah varian lain?")
                             .setPositiveButton("Ya") { _, _ ->
-                                showAddVariantDialog(parentName, parentPrice, parentStock)
+                                showAddVariantDialog(parentName, parentPrice)
                             }
                             .setNegativeButton("Tidak", null)
                             .show()
                     }
                     .setNegativeButton("Lewati") { _, _ ->
-                        // Sudah simpan produk utama, tidak tambah varian
+                        // Already saved main product, no variants added
                     }
                     .show()
             } catch (e: Exception) {

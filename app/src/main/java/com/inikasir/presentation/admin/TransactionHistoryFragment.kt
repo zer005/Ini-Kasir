@@ -94,7 +94,10 @@ class TransactionHistoryFragment : Fragment() {
                     AlertDialog.Builder(requireContext())
                         .setTitle("✅ Rekap Berhasil")
                         .setMessage("${result.transactionCount} transaksi telah direkap!\nTotal: Rp ${String.format("%,.0f", result.totalRevenue)}")
-                        .setPositiveButton("OK", null)
+                        .setPositiveButton("OK") { _, _ ->
+                            // Refresh the list after dialog is dismissed
+                            viewModel.loadUnrecappedTransactions()
+                        }
                         .show()
                 }
                 is AdminViewModel.RecapResult.Error -> {
@@ -125,6 +128,8 @@ class TransactionHistoryFragment : Fragment() {
             """.trimIndent())
             .setPositiveButton("✅ Rekap Sekarang") { _, _ ->
                 viewModel.createRecap()
+                // Clear the list immediately to prevent showing old transactions
+                transactionAdapter.submitList(emptyList())
             }
             .setNegativeButton("❌ Batal", null)
             .show()
