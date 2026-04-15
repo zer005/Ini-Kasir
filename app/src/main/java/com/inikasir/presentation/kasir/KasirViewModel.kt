@@ -9,6 +9,8 @@ import com.inikasir.domain.usecase.product.GetAllProductsUseCase
 import com.inikasir.domain.usecase.transaction.CreateTransactionUseCase
 import com.inikasir.presentation.common.BaseViewModel
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 class KasirViewModel(
     private val getAllProductsUseCase: GetAllProductsUseCase,
@@ -17,6 +19,10 @@ class KasirViewModel(
 
     // Products
     val products = getAllProductsUseCase()
+        .map { entities ->
+            // Only show main products (parentId == null) in the grid
+            entities.filter { it.parentId == null }
+        }
         .asLiveData()
 
     // Cart
@@ -33,15 +39,25 @@ class KasirViewModel(
     private val _searchQuery = MutableLiveData("")
     val searchQuery: LiveData<String> = _searchQuery
 
-    fun addToCart(product: ProductEntity) {
-        // Check if product has variants
-        if (product.parentId == null && product.variantName == null) {
-            // Main product without variants - add directly
-            addItemToCart(product)
-        } else {
-            // Product with variants - add the specific variant
-            addItemToCart(product)
+    fun handleProductClick(product: ProductEntity) {
+        // Check if product has variants by checking if there are any children
+        // For now, we'll let the Fragment handle showing the variant dialog
+        // This method can be used for future logic if needed
+    }
+
+    fun getVariants(parentId: Long, callback: (List<ProductEntity>) -> Unit) {
+        launch {
+            // Get all products and filter for variants of this parent
+            val allProducts = getAllProductsUseCase().value ?: emptyList()
+            val variants = allProducts.filter { it.parentId == parentId }
+            withContext(Dispatchers.Main) {
+                callback(variants)
+            }
         }
+    }
+
+    fun addToCart(product: ProductEntity) {
+        addItemToCart(product)
     }
 
     private fun addItemToCart(product: ProductEntity) {
@@ -125,7 +141,7 @@ class KasirViewModel(
             try {
                 val transactionId = createTransactionUseCase(items, total)
                 clearCart() // Clear cart AFTER successful transaction
-                _transactionResult.postValue(TransactionResult.Success(transactionId))
+                _transactionResult.postValue(TransactionResult.Success(transactionId, total))
             } catch (e: Exception) {
                 _transactionResult.postValue(TransactionResult.Error(e.message ?: "Transaksi gagal"))
             }
@@ -137,7 +153,7 @@ class KasirViewModel(
     }
 
     sealed class TransactionResult {
-        data class Success(val transactionId: Long) : TransactionResult()
+        data class Success(val transactionId: Long, val totalAmount: Double) : TransactionResult()
         data class Error(val message: String) : TransactionResult()
     }
 }

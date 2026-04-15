@@ -10,7 +10,8 @@ import com.inikasir.data.local.entity.ProductEntity
 import com.inikasir.databinding.ItemProductGridBinding
 
 class ProductGridAdapter(
-    private val onItemClick: (ProductEntity) -> Unit
+    private val onItemClick: (ProductEntity) -> Unit,
+    private val onShowVariants: (ProductEntity) -> Unit
 ) : ListAdapter<ProductEntity, ProductGridAdapter.ProductViewHolder>(ProductDiffCallback()) {
     
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProductViewHolder {
@@ -19,7 +20,7 @@ class ProductGridAdapter(
             parent,
             false
         )
-        return ProductViewHolder(binding, onItemClick)
+        return ProductViewHolder(binding, onItemClick, onShowVariants)
     }
     
     override fun onBindViewHolder(holder: ProductViewHolder, position: Int) {
@@ -28,11 +29,15 @@ class ProductGridAdapter(
     
     class ProductViewHolder(
         private val binding: ItemProductGridBinding,
-        private val onItemClick: (ProductEntity) -> Unit
+        private val onItemClick: (ProductEntity) -> Unit,
+        private val onShowVariants: (ProductEntity) -> Unit
     ) : RecyclerView.ViewHolder(binding.root) {
         
         fun bind(product: ProductEntity) {
-            val displayName = if (product.variantName != null) {
+            // For main products (no parentId), show only the product name without variant info
+            val displayName = if (product.parentId == null && product.variantName == null) {
+                product.name
+            } else if (product.variantName != null) {
                 "${product.name} (${product.variantName})"
             } else {
                 product.name
@@ -41,21 +46,42 @@ class ProductGridAdapter(
             binding.tvProductName.text = displayName
             binding.tvProductPrice.text = "Rp ${String.format("%,.0f", product.price)}"
             
-            // Stock info
-            if (product.stock > 0) {
-                binding.tvStock.text = "Stok: ${product.stock}"
+            // Calculate total stock for main products with variants
+            val displayStock = if (product.parentId == null && product.variantName == null) {
+                // Main product - will show variants on click
+                "Tap untuk varian"
+            } else {
+                if (product.stock > 0) {
+                    "Stok: ${product.stock}"
+                } else {
+                    "Habis"
+                }
+            }
+            
+            binding.tvStock.text = displayStock
+            
+            // Visual state based on stock
+            if (product.parentId == null && product.variantName == null) {
+                // Main product - always enabled
+                binding.tvStock.setTextColor(Color.BLUE)
+                binding.root.alpha = 1.0f
+                binding.root.isEnabled = true
+            } else if (product.stock > 0) {
                 binding.tvStock.setTextColor(Color.GRAY)
                 binding.root.alpha = 1.0f
                 binding.root.isEnabled = true
             } else {
-                binding.tvStock.text = "Habis"
                 binding.tvStock.setTextColor(Color.RED)
                 binding.root.alpha = 0.5f
                 binding.root.isEnabled = false
             }
             
             binding.root.setOnClickListener {
-                if (product.stock > 0) {
+                if (product.parentId == null && product.variantName == null) {
+                    // Main product - show variants dialog
+                    onShowVariants(product)
+                } else if (product.stock > 0) {
+                    // Variant or single product - add directly
                     onItemClick(product)
                 }
             }

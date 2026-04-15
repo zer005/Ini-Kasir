@@ -154,7 +154,7 @@ class AdminViewModel(
                     val totalRevenue = _unrecappedTransactions.value?.sumOf { it.total } ?: 0.0
                     val count = _unrecappedTransactions.value?.size ?: 0
                     _recapResult.postValue(RecapResult.Success(recapId, count, totalRevenue))
-                    loadUnrecappedTransactions() // Refresh list
+                    // Don't call loadUnrecappedTransactions here - let the Fragment handle it after user dismisses dialog
                 } else {
                     _recapResult.postValue(RecapResult.Error("Tidak ada transaksi untuk direkap"))
                 }

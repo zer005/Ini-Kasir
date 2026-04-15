@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.GridLayoutManager
@@ -46,15 +47,47 @@ class KasirFragment : Fragment() {
     }
     
     private fun setupProductGrid() {
-        productAdapter = ProductGridAdapter { product ->
-            viewModel.addToCart(product)
-        }
+        productAdapter = ProductGridAdapter(
+            onItemClick = { product ->
+                viewModel.handleProductClick(product)
+            },
+            onShowVariants = { mainProduct ->
+                showVariantDialog(mainProduct)
+            }
+        )
         
         val spanCount = resources.getInteger(R.integer.product_grid_span)
         
         binding.rvProducts.apply {
             layoutManager = GridLayoutManager(requireContext(), spanCount)
             adapter = productAdapter
+        }
+    }
+    
+    private fun showVariantDialog(mainProduct: com.inikasir.data.local.entity.ProductEntity) {
+        viewModel.getVariants(mainProduct.id) { variants ->
+            if (variants.isEmpty()) {
+                // No variants, add directly
+                viewModel.addToCart(mainProduct)
+                return@getVariants
+            }
+            
+            val variantNames = variants.map { v ->
+                "${v.variantName} - Stok: ${v.stock}"
+            }.toTypedArray()
+            
+            AlertDialog.Builder(requireContext())
+                .setTitle("Pilih Varian ${mainProduct.name}")
+                .setItems(variantNames) { _, which ->
+                    val selectedVariant = variants[which]
+                    if (selectedVariant.stock > 0) {
+                        viewModel.addToCart(selectedVariant)
+                    } else {
+                        Toast.makeText(requireContext(), "Stok habis!", Toast.LENGTH_SHORT).show()
+                    }
+                }
+                .setNegativeButton("Batal", null)
+                .show()
         }
     }
     
@@ -134,7 +167,8 @@ class KasirFragment : Fragment() {
         viewModel.transactionResult.observe(viewLifecycleOwner) { result ->
             when (result) {
                 is KasirViewModel.TransactionResult.Success -> {
-                    Toast.makeText(requireContext(), "✅ Transaksi berhasil!", Toast.LENGTH_SHORT).show()
+                    showTransactionSuccessDialog(result.totalAmount)
+                    // Cart is already cleared by ViewModel after successful transaction
                 }
                 is KasirViewModel.TransactionResult.Error -> {
                     Toast.makeText(requireContext(), "❌ ${result.message}", Toast.LENGTH_SHORT).show()
@@ -142,6 +176,14 @@ class KasirFragment : Fragment() {
                 else -> {}
             }
         }
+    }
+    
+    private fun showTransactionSuccessDialog(totalAmount: Double) {
+        AlertDialog.Builder(requireContext())
+            .setTitle("✅ Transaksi Berhasil")
+            .setMessage("Total pembayaran:\n\nRp ${String.format("%,0.f", totalAmount)}\n\nTerima kasih!")
+            .setPositiveButton("OK", null)
+            .show()
     }
     
     override fun onDestroyView() {
