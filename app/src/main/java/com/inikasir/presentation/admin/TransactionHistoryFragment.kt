@@ -68,7 +68,7 @@ class TransactionHistoryFragment : Fragment() {
         // Observe unrecapped transactions
         viewModel.unrecappedTransactions.observe(viewLifecycleOwner) { transactions ->
             transactionAdapter.submitList(transactions)
-            
+
             // Update empty state
             if (transactions.isEmpty()) {
                 binding.emptyState.visibility = View.VISIBLE
@@ -79,29 +79,38 @@ class TransactionHistoryFragment : Fragment() {
                 binding.rvTransactions.visibility = View.VISIBLE
                 binding.btnRecap.isEnabled = true
             }
-            
+
             // Update summary
             val totalTransactions = transactions.size
             val totalRevenue = transactions.sumOf { it.total }
-            
+
             binding.tvTotalTransactions.text = "$totalTransactions"
             binding.tvTotalRevenue.text = "Rp ${String.format("%,.0f", totalRevenue)}"
         }
-        
+
+        // Observe recaps for history
+        viewModel.recaps.observe(viewLifecycleOwner) { recaps ->
+            // This will automatically populate when recaps change
+        }
+
         viewModel.recapResult.observe(viewLifecycleOwner) { result ->
             when (result) {
                 is AdminViewModel.RecapResult.Success -> {
-                    AlertDialog.Builder(requireContext())
+                    androidx.appcompat.app.AlertDialog.Builder(requireContext())
                         .setTitle("✅ Rekap Berhasil")
                         .setMessage("${result.transactionCount} transaksi telah direkap!\nTotal: Rp ${String.format("%,.0f", result.totalRevenue)}")
                         .setPositiveButton("OK") { _, _ ->
+<<<<<<< Updated upstream
                             // Refresh the list after dialog is dismissed
                             viewModel.loadUnrecappedTransactions()
+=======
+                            // After recap success, recap history will auto-update
+>>>>>>> Stashed changes
                         }
                         .show()
                 }
                 is AdminViewModel.RecapResult.Error -> {
-                    AlertDialog.Builder(requireContext())
+                    androidx.appcompat.app.AlertDialog.Builder(requireContext())
                         .setTitle("❌ Rekap Gagal")
                         .setMessage(result.message)
                         .setPositiveButton("OK", null)

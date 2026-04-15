@@ -32,8 +32,9 @@ class ProductGridAdapter(
         private val onItemClick: (ProductEntity) -> Unit,
         private val onShowVariants: (ProductEntity) -> Unit
     ) : RecyclerView.ViewHolder(binding.root) {
-        
+
         fun bind(product: ProductEntity) {
+<<<<<<< Updated upstream
             // For main products (no parentId), show only the product name without variant info
             val displayName = if (product.parentId == null && product.variantName == null) {
                 product.name
@@ -74,9 +75,29 @@ class ProductGridAdapter(
                 binding.tvStock.setTextColor(Color.RED)
                 binding.root.alpha = 0.5f
                 binding.root.isEnabled = false
+=======
+            // Only show main products (parentId == null)
+            binding.tvProductName.text = product.name
+            binding.tvProductPrice.text = "Rp ${String.format("%,.0f", product.price)}"
+
+            // For main products, show total stock from all variants
+            if (product.parentId == null && product.variantName == null) {
+                // This is a main product - we'll load variants on click
+                binding.tvStock.text = "Tap untuk pilih varian"
+                binding.tvStock.setTextColor(android.graphics.Color.parseColor("#9E9E9E"))
+                binding.root.alpha = 1.0f
+                binding.root.isEnabled = true
+            } else {
+                // This shouldn't happen since we only show main products
+                binding.tvStock.text = "Stok: ${product.stock}"
+                binding.tvStock.setTextColor(android.graphics.Color.GRAY)
+                binding.root.alpha = 1.0f
+                binding.root.isEnabled = true
+>>>>>>> Stashed changes
             }
-            
+
             binding.root.setOnClickListener {
+<<<<<<< Updated upstream
                 if (product.parentId == null && product.variantName == null) {
                     // Main product - show variants dialog
                     onShowVariants(product)
@@ -84,6 +105,9 @@ class ProductGridAdapter(
                     // Variant or single product - add directly
                     onItemClick(product)
                 }
+=======
+                onItemClick(product)
+>>>>>>> Stashed changes
             }
         }
     }

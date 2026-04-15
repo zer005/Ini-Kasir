@@ -4,20 +4,25 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.asLiveData
 import com.inikasir.data.local.entity.ProductEntity
+import com.inikasir.data.repository.ProductRepository
 import com.inikasir.domain.model.CartItem
 import com.inikasir.domain.usecase.product.GetAllProductsUseCase
 import com.inikasir.domain.usecase.transaction.CreateTransactionUseCase
 import com.inikasir.presentation.common.BaseViewModel
+<<<<<<< Updated upstream
 import kotlinx.coroutines.flow.map
+=======
+>>>>>>> Stashed changes
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 class KasirViewModel(
     private val getAllProductsUseCase: GetAllProductsUseCase,
-    private val createTransactionUseCase: CreateTransactionUseCase
+    private val createTransactionUseCase: CreateTransactionUseCase,
+    private val productRepository: ProductRepository
 ) : BaseViewModel() {
 
-    // Products
+    // Products (only main products)
     val products = getAllProductsUseCase()
         .map { entities ->
             // Only show main products (parentId == null) in the grid
@@ -39,6 +44,7 @@ class KasirViewModel(
     private val _searchQuery = MutableLiveData("")
     val searchQuery: LiveData<String> = _searchQuery
 
+<<<<<<< Updated upstream
     fun handleProductClick(product: ProductEntity) {
         // Check if product has variants by checking if there are any children
         // For now, we'll let the Fragment handle showing the variant dialog
@@ -52,15 +58,35 @@ class KasirViewModel(
             val variants = allProducts.filter { it.parentId == parentId }
             withContext(Dispatchers.Main) {
                 callback(variants)
+=======
+    // Variants for selected product
+    private val _variants = MutableLiveData<List<ProductEntity>>()
+    val variants: LiveData<List<ProductEntity>> = _variants
+
+    // Load variants for a product
+    fun loadVariants(productId: Long) {
+        launch {
+            try {
+                productRepository.getVariants(productId).collect { variantList ->
+                    withContext(Dispatchers.Main) {
+                        _variants.value = variantList
+                    }
+                }
+            } catch (e: Exception) {
+                _variants.value = emptyList()
+>>>>>>> Stashed changes
             }
         }
     }
 
     fun addToCart(product: ProductEntity) {
+<<<<<<< Updated upstream
         addItemToCart(product)
     }
 
     private fun addItemToCart(product: ProductEntity) {
+=======
+>>>>>>> Stashed changes
         val currentCart = _cartItems.value?.toMutableList() ?: mutableListOf()
         val existingItem = currentCart.find { it.productId == product.id }
 
@@ -140,8 +166,13 @@ class KasirViewModel(
         launch {
             try {
                 val transactionId = createTransactionUseCase(items, total)
+                val transactionTotal = total // Capture total before clearing
                 clearCart() // Clear cart AFTER successful transaction
+<<<<<<< Updated upstream
                 _transactionResult.postValue(TransactionResult.Success(transactionId, total))
+=======
+                _transactionResult.postValue(TransactionResult.Success(transactionId, transactionTotal))
+>>>>>>> Stashed changes
             } catch (e: Exception) {
                 _transactionResult.postValue(TransactionResult.Error(e.message ?: "Transaksi gagal"))
             }
@@ -150,6 +181,10 @@ class KasirViewModel(
 
     fun updateSearchQuery(query: String) {
         _searchQuery.value = query
+    }
+
+    fun resetTransactionResult() {
+        _transactionResult.value = null
     }
 
     sealed class TransactionResult {

@@ -25,7 +25,8 @@ class KasirViewModelFactory(
             @Suppress("UNCHECKED_CAST")
             return KasirViewModel(
                 getAllProductsUseCase = getAllProductsUseCase,
-                createTransactionUseCase = createTransactionUseCase
+                createTransactionUseCase = createTransactionUseCase,
+                productRepository = productRepository
             ) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")

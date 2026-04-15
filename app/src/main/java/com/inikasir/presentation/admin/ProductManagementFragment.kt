@@ -31,7 +31,7 @@ class ProductManagementFragment : Fragment() {
     }
 
     private lateinit var productAdapter: ProductManagementAdapter
-    
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -40,14 +40,14 @@ class ProductManagementFragment : Fragment() {
         _binding = FragmentProductManagementBinding.inflate(inflater, container, false)
         return binding.root
     }
-    
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupRecyclerView()
         setupFab()
         observeData()
     }
-    
+
     private fun setupRecyclerView() {
         productAdapter = ProductManagementAdapter(
             onEditClick = { product ->
@@ -57,27 +57,27 @@ class ProductManagementFragment : Fragment() {
                 showDeleteConfirmation(product)
             }
         )
-        
+
         binding.rvProducts.apply {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = productAdapter
         }
     }
-    
+
     private fun setupFab() {
         val fab = requireActivity().findViewById<FloatingActionButton>(R.id.fabAddProduct)
         fab.setOnClickListener {
             showAddProductDialog()
         }
     }
-    
+
     private fun observeData() {
         viewModel.products.observe(viewLifecycleOwner) { products ->
             productAdapter.submitList(products)
-            
+
             val emptyState = binding.root.findViewById<View>(R.id.emptyState)
             val rvProducts = binding.rvProducts
-            
+
             if (products.isEmpty()) {
                 emptyState.visibility = View.VISIBLE
                 rvProducts.visibility = View.GONE
@@ -87,8 +87,21 @@ class ProductManagementFragment : Fragment() {
             }
         }
     }
-    
+
     private fun showAddProductDialog() {
+        AlertDialog.Builder(requireContext())
+            .setTitle("Jenis Produk")
+            .setMessage("Apakah produk ini memiliki varian?")
+            .setPositiveButton("Produk Tunggal") { _, _ ->
+                showAddSingleProductDialog()
+            }
+            .setNegativeButton("Produk dengan Varian") { _, _ ->
+                showAddProductWithVariantsDialog()
+            }
+            .show()
+    }
+
+    private fun showAddSingleProductDialog() {
         val dialogView = layoutInflater.inflate(R.layout.dialog_add_product, null)
         val etName = dialogView.findViewById<EditText>(R.id.etProductName)
         val etPrice = dialogView.findViewById<EditText>(R.id.etProductPrice)
@@ -97,8 +110,10 @@ class ProductManagementFragment : Fragment() {
         val etStock = dialogView.findViewById<EditText>(R.id.etProductStock)
         etStock.visibility = View.GONE
 
+        etStock.hint = "Stok"
+
         AlertDialog.Builder(requireContext())
-            .setTitle("Tambah Produk")
+            .setTitle("Tambah Produk Tunggal")
             .setView(dialogView)
             .setPositiveButton("Lanjut") { _, _ ->
                 val name = etName.text.toString().trim()
@@ -113,13 +128,18 @@ class ProductManagementFragment : Fragment() {
                     return@setPositiveButton
                 }
 
+<<<<<<< Updated upstream
                 // Tanya apakah ini varian atau produk utama
                 showProductTypeDialog(name, price)
+=======
+                viewModel.addProduct(name, price, stock)
+>>>>>>> Stashed changes
             }
             .setNegativeButton("Batal", null)
             .show()
     }
 
+<<<<<<< Updated upstream
     private fun showProductTypeDialog(name: String, price: Double) {
         AlertDialog.Builder(requireContext())
             .setTitle("Apakah produk ini memiliki varian?")
@@ -217,6 +237,49 @@ class ProductManagementFragment : Fragment() {
                         // Already saved main product, no variants added
                     }
                     .show()
+=======
+    private fun showAddProductWithVariantsDialog() {
+        val dialogView = layoutInflater.inflate(R.layout.dialog_add_product, null)
+        val etName = dialogView.findViewById<EditText>(R.id.etProductName)
+        val etPrice = dialogView.findViewById<EditText>(R.id.etProductPrice)
+        val etStock = dialogView.findViewById<EditText>(R.id.etProductStock)
+
+        etStock.visibility = View.GONE
+
+        AlertDialog.Builder(requireContext())
+            .setTitle("Produk dengan Varian - Info Dasar")
+            .setMessage("Masukkan nama produk dan harga. Varian akan ditambahkan setelahnya.")
+            .setView(dialogView)
+            .setPositiveButton("Lanjut") { _, _ ->
+                val name = etName.text.toString().trim()
+                val price = etPrice.text.toString().toDoubleOrNull() ?: 0.0
+
+                if (name.isBlank() || price <= 0) {
+                    android.widget.Toast.makeText(
+                        requireContext(),
+                        "Nama dan harga harus valid",
+                        android.widget.Toast.LENGTH_SHORT
+                    ).show()
+                    return@setPositiveButton
+                }
+
+                saveMainProductAndAddVariants(name, price)
+            }
+            .setNegativeButton("Batal", null)
+            .show()
+    }
+
+    private fun saveMainProductAndAddVariants(name: String, price: Double) {
+        viewLifecycleOwner.lifecycleScope.launch {
+            try {
+                val parentId = withContext(Dispatchers.IO) {
+                    val db = AppDatabase.getInstance(requireContext())
+                    val productRepo = com.inikasir.data.repository.ProductRepository(db)
+                    productRepo.insertProduct(name, price, 0)
+                }
+
+                showAddVariantDialog(name, price, parentId)
+>>>>>>> Stashed changes
             } catch (e: Exception) {
                 android.widget.Toast.makeText(
                     requireContext(),
@@ -226,7 +289,56 @@ class ProductManagementFragment : Fragment() {
             }
         }
     }
-    
+
+    private fun showAddVariantDialog(parentName: String, parentPrice: Double, parentId: Long) {
+        val dialogView = layoutInflater.inflate(R.layout.dialog_add_product, null)
+        val etVariantName = dialogView.findViewById<EditText>(R.id.etProductName)
+        val etPrice = dialogView.findViewById<EditText>(R.id.etProductPrice)
+        val etStock = dialogView.findViewById<EditText>(R.id.etProductStock)
+
+        etVariantName?.hint = "Nama Varian (contoh: Rasa Strawberry)"
+        etPrice?.setText(parentPrice.toString().toInt().toString())
+        etStock?.hint = "Stok varian ini"
+
+        AlertDialog.Builder(requireContext())
+            .setTitle("Tambah Varian - $parentName")
+            .setMessage("Masukkan nama varian dan stok")
+            .setView(dialogView)
+            .setPositiveButton("Tambah Varian", null) // null dulu, override nanti
+            .setNegativeButton("Batal", null)
+            .show().also { dialog ->
+                // Override positive button agar tidak auto-dismiss
+                dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
+                    val variantName = etVariantName?.text.toString().trim()
+                    val variantPrice = etPrice?.text.toString().toDoubleOrNull() ?: parentPrice
+                    val variantStock = etStock?.text.toString().toIntOrNull() ?: 0
+
+                    if (variantName.isBlank()) {
+                        android.widget.Toast.makeText(
+                            requireContext(),
+                            "Nama varian harus diisi",
+                            android.widget.Toast.LENGTH_SHORT
+                        ).show()
+                        return@setOnClickListener
+                    }
+
+                    viewModel.addProduct(parentName, variantPrice, variantStock, parentId, variantName)
+
+                    dialog.dismiss()
+
+                    // Tanya apakah mau tambah varian lain
+                    AlertDialog.Builder(requireContext())
+                        .setTitle("Tambah varian lain?")
+                        .setPositiveButton("Ya") { _, _ ->
+                            showAddVariantDialog(parentName, parentPrice, parentId)
+                        }
+                        .setNegativeButton("Tidak, selesai") { _, _ ->
+                        }
+                        .show()
+                }
+            }
+    }
+
     private fun showEditProductDialog(product: ProductEntity) {
         val dialogView = layoutInflater.inflate(R.layout.dialog_add_product, null)
         val etName = dialogView.findViewById<EditText>(R.id.etProductName)
@@ -237,7 +349,6 @@ class ProductManagementFragment : Fragment() {
         etPrice.setText(product.price.toString())
         etStock.setText(product.stock.toString())
 
-        // Jika produk memiliki varian, tampilkan info
         if (product.variantName != null) {
             etName.hint = "Nama Varian"
             etName.setText(product.variantName)
@@ -248,7 +359,7 @@ class ProductManagementFragment : Fragment() {
             .setView(dialogView)
             .setPositiveButton("Update") { _, _ ->
                 val name = if (product.variantName != null) {
-                    product.name // Nama produk utama tetap
+                    product.name
                 } else {
                     etName.text.toString()
                 }
@@ -265,7 +376,7 @@ class ProductManagementFragment : Fragment() {
             .setNegativeButton("Batal", null)
             .show()
     }
-    
+
     private fun showDeleteConfirmation(product: ProductEntity) {
         AlertDialog.Builder(requireContext())
             .setTitle("Hapus Produk")
@@ -276,7 +387,7 @@ class ProductManagementFragment : Fragment() {
             .setNegativeButton("Batal", null)
             .show()
     }
-    
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null

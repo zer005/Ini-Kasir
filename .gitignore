@@ -12,6 +12,13 @@
 # Dependencies
 .gradle/
 build/
+# Local configuration
+local.properties
+
+# Gradle files
+.gradle/
+build/
+gradle-*/
 
 # Logs and temp files
 *.log
